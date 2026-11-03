@@ -1,0 +1,46 @@
+name: Manual Windows build
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    name: Build Windows x64 portable package
+    runs-on: windows-latest
+    timeout-minutes: 45
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+
+      - name: Install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - name: Build and package
+        shell: pwsh
+        run: .\scripts\build-dev-portable.ps1 -OutputDirectory "dist\dev-portable"
+
+      - name: Upload portable package
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: AIMToolkit-portable-windows-x64
+          path: dist/dev-portable/
+          if-no-files-found: error
+          retention-days: 14
+
+      - name: Upload compiled files if packaging fails
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: AIMToolkit-compile-output
+          path: |
+            target/x86_64-pc-windows-msvc/release/aim-ramdisk-manager.exe
+            target/x86_64-pc-windows-msvc/release/build/**/aimapi-adapter-shim.dll
+          if-no-files-found: warn
+          retention-days: 14
