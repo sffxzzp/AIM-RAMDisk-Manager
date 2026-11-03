@@ -1,0 +1,16 @@
+# Rust build and portable output
+/target/
+/dist/
+
+# Local settings and profiles
+/data/
+
+# Downloaded or locally supplied AIM runtime files
+/runtime/AIMtk.zip
+/runtime/RamDyn.exe
+/runtime/aimapi.dll
+/runtime/aimapi-backend.dll
+
+# other files
+DESIGN.md
+PLAN.md
