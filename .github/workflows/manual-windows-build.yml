@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   build:
-    name: Build Windows x64 portable package
+    name: Build Windows x64 executable and shim
     runs-on: windows-latest
     timeout-minutes: 45
 
