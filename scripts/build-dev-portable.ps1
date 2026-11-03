@@ -231,7 +231,9 @@ try {
             Write-Host ("Local archive validation passed: {0} ({1} bytes)" -f $archivePath, $archiveInfo.Length)
         } else {
             Write-Host "Downloading AIM Toolkit $runtimePackageVersion runtime components from SourceForge..."
-            $curlCommand = Get-Command curl.exe -CommandType Application -ErrorAction SilentlyContinue
+            # Windows runners may expose multiple curl.exe locations; use one executable path.
+            $curlCommand = Get-Command curl.exe -CommandType Application -ErrorAction SilentlyContinue |
+                Select-Object -First 1
             $runtimeDownloadUris = @($runtimePackageUrl)
             $archiveIsValid = $false
         }
