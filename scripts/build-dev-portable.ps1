@@ -1,5 +1,6 @@
 ﻿param(
-    [string] $OutputDirectory
+    [string] $OutputDirectory,
+    [switch] $ActionsBuild
 )
 
 $ErrorActionPreference = "Stop"
@@ -105,12 +106,14 @@ function Test-RuntimePackageArchive {
 }
 
 $runtimeNames = @("RamDyn.exe", "aimapi.dll")
-foreach ($sourcePath in @(
-    (Join-Path $repositoryRoot "README.md"),
-    $runtimeReadme
-)) {
-    if (-not (Test-Path -LiteralPath $sourcePath -PathType Leaf)) {
-        throw "Missing package documentation file: $sourcePath"
+if (-not $ActionsBuild) {
+    foreach ($sourcePath in @(
+        (Join-Path $repositoryRoot "README.md"),
+        $runtimeReadme
+    )) {
+        if (-not (Test-Path -LiteralPath $sourcePath -PathType Leaf)) {
+            throw "Missing package documentation file: $sourcePath"
+        }
     }
 }
 
@@ -186,6 +189,11 @@ if ($shimCandidates.Count -eq 0) {
 }
 $adapterShimSource = $shimCandidates[0].FullName
 Test-X64PeFile -Path $adapterShimSource
+
+if ($ActionsBuild) {
+    Write-Host "Actions build mode: skipping AIM Toolkit runtime download and portable package assembly."
+    return
+}
 
 [System.IO.Directory]::CreateDirectory($parentDirectory) | Out-Null
 

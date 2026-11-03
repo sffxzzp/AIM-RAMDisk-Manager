@@ -21,24 +21,26 @@ jobs:
         with:
           targets: x86_64-pc-windows-msvc
 
-      - name: Build and package
+      - name: Build executable and shim
         shell: pwsh
-        run: .\scripts\build-dev-portable.ps1 -OutputDirectory "dist\dev-portable"
+        run: .\scripts\build-dev-portable.ps1 -ActionsBuild
 
-      - name: Upload portable package
+      - name: Upload executable and shim
         if: success()
         uses: actions/upload-artifact@v4
         with:
-          name: AIMToolkit-portable-windows-x64
-          path: dist/dev-portable/
+          name: AIMToolkit-exe-and-shim-windows-x64
+          path: |
+            target/x86_64-pc-windows-msvc/release/aim-ramdisk-manager.exe
+            target/x86_64-pc-windows-msvc/release/build/**/aimapi-adapter-shim.dll
           if-no-files-found: error
           retention-days: 14
 
-      - name: Upload compiled files if packaging fails
+      - name: Upload available executable and shim if build fails
         if: failure()
         uses: actions/upload-artifact@v4
         with:
-          name: AIMToolkit-compile-output
+          name: AIMToolkit-exe-and-shim-diagnostics
           path: |
             target/x86_64-pc-windows-msvc/release/aim-ramdisk-manager.exe
             target/x86_64-pc-windows-msvc/release/build/**/aimapi-adapter-shim.dll
